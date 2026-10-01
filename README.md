@@ -1,5 +1,7 @@
 # grapesjs-context-menu
 
+[![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/cw/shibisty)
+
 A GrapesJS plugin that adds a right-click context menu to the **canvas** and
 to the **Layer Manager**, plus a clickable **hierarchy badge** over the
 selected element.
@@ -186,3 +188,7 @@ npm run build      # dist/: ES module, UMD, .d.ts
 ## License
 
 MIT
+
+[![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/cw/shibisty)
+
+If this project helps you, consider supporting its development on Patreon ❤️
