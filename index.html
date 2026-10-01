@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>grapesjs-context-menu — dev playground</title>
+    <style>
+      html, body { margin: 0; height: 100%; }
+      #gjs { height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="gjs"></div>
+    <!--
+      `npm run dev` — the plugin straight from src/ (no build needed),
+      GrapesJS from node_modules. Right-click in the canvas or on a layer.
+    -->
+    <script type="module">
+      import grapesjs from 'grapesjs';
+      import 'grapesjs/dist/css/grapes.min.css';
+      import contextMenu from './src/index.ts';
+
+      const editor = grapesjs.init({
+        container: '#gjs',
+        height: '100vh',
+        storageManager: false,
+        telemetry: false,
+        plugins: [contextMenu],
+        blockManager: {
+          blocks: [
+            { id: 'text', label: 'Text', category: 'Basic', content: '<p>Insert your text here</p>' },
+            { id: 'box', label: 'Box', category: 'Basic', content: '<div style="padding:20px;border:1px dashed #999"></div>' },
+            { id: 'image', label: 'Image', category: 'Media', content: { type: 'image' } },
+          ],
+        },
+        components: `
+          <section style="padding:40px">
+            <div class="box" style="padding:20px">
+              <h1>Title</h1>
+              <p>First paragraph</p>
+              <p>Second paragraph</p>
+            </div>
+          </section>`,
+      });
+
+      // "View styles" appears when this command exists (normally provided by a sidebar plugin).
+      editor.Commands.add('layers-sidebar:show-styles', {
+        run: (ed) => ed.runCommand('core:open-styles'),
+      });
+
+      editor.on('context-menu:action', (e) => console.log('[context-menu:action]', e.id, e.component));
+      window.editor = editor;
+    </script>
+  </body>
+</html>
