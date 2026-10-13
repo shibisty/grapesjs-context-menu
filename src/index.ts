@@ -116,9 +116,13 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
     menu.open(p.x, p.y, comp, 'canvas');
   };
 
-  const bindCanvas = (): void => {
+  // `doc` comes from the `canvas:frame:load` event: at that moment
+  // `Canvas.getFrameEl()` may still return the OLD iframe (e.g. after
+  // `loadProjectData()`, which grapesjs-pages calls on every page switch),
+  // so the new document would never get the listener.
+  const bindCanvas = (doc0?: Document | null): void => {
     if (!options.canvasMenu) return;
-    const doc = getFrameDoc() as FrameDoc | null;
+    const doc = (doc0 || getFrameDoc()) as FrameDoc | null;
     if (!doc || doc.__gjsCmBound) return;
     doc.__gjsCmBound = true;
     doc.addEventListener('contextmenu', onCanvasContextMenu);
@@ -162,7 +166,8 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
 
   editor.on('layer:render', onLayerRender);
   // The canvas iframe is rebuilt on some actions (device change, page switch).
-  editor.on('canvas:frame:load', bindCanvas);
+  const onFrameLoad = (ev?: { window?: Window }): void => bindCanvas(ev?.window?.document);
+  editor.on('canvas:frame:load', onFrameLoad);
   if (badge) editor.on('component:toggled', badge.start);
 
   editor.onReady(() => {
@@ -186,7 +191,7 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
     if (isEditorAlive(editor)) {
       // Plugin torn down by hand (api.destroy()) on a live editor.
       editor.off('layer:render', onLayerRender);
-      editor.off('canvas:frame:load', bindCanvas);
+      editor.off('canvas:frame:load', onFrameLoad);
       if (badge) editor.off('component:toggled', badge.start);
       editor.off('destroy', destroy);
     }

@@ -30,6 +30,29 @@ describe('context menu in the canvas', () => {
   const canvasEl = (id: string): Element => frameDoc(editor).getElementById(id)!;
   const ids = (): string[] => s.get('box').components().map((c: Component) => c.getId());
 
+  it('keeps working after the canvas iframe is rebuilt (loadProjectData, e.g. grapesjs-pages)', async () => {
+    await setup();
+    const oldDoc = frameDoc(editor);
+    editor.loadProjectData(editor.getProjectData());
+    for (let i = 0; i < 50 && frameDoc(editor) === oldDoc; i++) await tick();
+    await tick();
+    expect(frameDoc(editor)).not.toBe(oldDoc);
+    const ev = rightClick(frameDoc(editor).getElementById('p1')!);
+    expect(ev.defaultPrevented).toBe(true);
+    expect(menu()).toBeTruthy();
+  });
+
+  it('binds the document of the frame from the canvas:frame:load event, not Canvas.getFrameEl()', async () => {
+    await setup();
+    // In a real browser, after loadProjectData() the event fires while
+    // Canvas.getFrameEl() still returns the old iframe.
+    const iframe = document.createElement('iframe');
+    document.body.append(iframe);
+    const newDoc = iframe.contentDocument as Document & { __gjsCmBound?: boolean };
+    editor.trigger('canvas:frame:load', { window: iframe.contentWindow });
+    expect(newDoc.__gjsCmBound).toBe(true);
+  });
+
   it('right-click opens the menu, selects the element and prevents the native menu', async () => {
     await setup();
     const ev = rightClick(canvasEl('p1'));
