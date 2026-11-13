@@ -9,6 +9,7 @@ export type BuiltinItemId =
   | 'down'
   | 'move'
   | 'clone'
+  | 'font'
   | 'styles'
   | 'delete';
 
@@ -25,6 +26,17 @@ export interface ContextMenuLabels {
   viewStyles: string;
   delete: string;
   hierarchyTitle: string;
+  /** "Font" item (grapesjs-fonts installed). */
+  font: string;
+  /** Font submenu header when text is selected in the canvas. */
+  fontSelection: string;
+  /** Font submenu header otherwise. */
+  fontElement: string;
+  noFonts: string;
+  /** Removes font-family from the element. */
+  fontDefault: string;
+  /** Opens the grapesjs-fonts browser. */
+  fontMore: string;
 }
 
 /** Context passed to custom item callbacks. */
@@ -34,6 +46,8 @@ export interface MenuContext {
   component: Component;
   /** Where the menu was opened from. */
   source: 'canvas' | 'layers';
+  /** Text selected inside the component in the canvas when the menu opened. */
+  range?: Range | null;
 }
 
 /**
@@ -68,6 +82,12 @@ export interface ContextMenuOptions {
   layersMenu?: boolean;
   /** Clickable "Name ▾" badge with ancestors over the selected element. Default: `true`. */
   hierarchyBadge?: boolean;
+  /**
+   * "Font" submenu with the project fonts of grapesjs-fonts (shown only
+   * when that plugin is installed): applies a font to the selected text in
+   * the canvas or to the whole element. Default: `true`.
+   */
+  fontsMenu?: boolean;
   /**
    * Command run by "View styles". The item is hidden when the command
    * is not registered. Default: `'layers-sidebar:show-styles'`

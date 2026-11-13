@@ -6,6 +6,7 @@ export const DEFAULT_OPTIONS: ResolvedOptions = {
   canvasMenu: true,
   layersMenu: true,
   hierarchyBadge: true,
+  fontsMenu: true,
   viewStylesCommand: 'layers-sidebar:show-styles',
   labels: {},
   extendMenu: undefined,

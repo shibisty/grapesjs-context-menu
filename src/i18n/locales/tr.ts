@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Stilleri görüntüle',
   delete: 'Sil',
   hierarchyTitle: 'Hiyerarşi: üzerinde çalışılacak öğeyi seçin',
+  font: 'Yazı tipi',
+  fontSelection: 'Seçili metin',
+  fontElement: 'Tüm öğe',
+  noFonts: 'Projede yazı tipi yok',
+  fontDefault: 'Varsayılan yazı tipi',
+  fontMore: 'Daha fazla yazı tipi…',
 };
 
 export default messages;

@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Vis stiler',
   delete: 'Slett',
   hierarchyTitle: 'Hierarki: velg hvilket element du vil jobbe med',
+  font: 'Skrift',
+  fontSelection: 'Valgt tekst',
+  fontElement: 'Hele elementet',
+  noFonts: 'Ingen skrifter i prosjektet',
+  fontDefault: 'Standardskrift',
+  fontMore: 'Flere skrifter…',
 };
 
 export default messages;

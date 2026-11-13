@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'عرض الأنماط',
   delete: 'حذف',
   hierarchyTitle: 'التسلسل الهرمي: اختر العنصر الذي تريد العمل عليه',
+  font: 'الخط',
+  fontSelection: 'النص المحدد',
+  fontElement: 'العنصر بالكامل',
+  noFonts: 'لا توجد خطوط في المشروع',
+  fontDefault: 'الخط الافتراضي',
+  fontMore: 'مزيد من الخطوط…',
 };
 
 export default messages;

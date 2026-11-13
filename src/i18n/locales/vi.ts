@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Xem kiểu',
   delete: 'Xóa',
   hierarchyTitle: 'Phân cấp: chọn phần tử để làm việc',
+  font: 'Phông chữ',
+  fontSelection: 'Văn bản đã chọn',
+  fontElement: 'Toàn bộ phần tử',
+  noFonts: 'Dự án chưa có phông chữ',
+  fontDefault: 'Phông chữ mặc định',
+  fontMore: 'Thêm phông chữ…',
 };
 
 export default messages;

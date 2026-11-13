@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: '스타일 보기',
   delete: '삭제',
   hierarchyTitle: '계층 구조: 작업할 요소를 선택하세요',
+  font: '글꼴',
+  fontSelection: '선택한 텍스트',
+  fontElement: '요소 전체',
+  noFonts: '프로젝트에 글꼴이 없습니다',
+  fontDefault: '기본 글꼴',
+  fontMore: '더 많은 글꼴…',
 };
 
 export default messages;

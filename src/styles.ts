@@ -29,7 +29,9 @@ export const CSS = [
   `.${PFX}-item small{opacity:.6;margin-left:10px;font-size:11px;}`,
   `.${PFX}-ico{display:inline-block;width:16px;margin-right:8px;text-align:center;opacity:.8;font-style:normal;}`,
   `.${PFX}-group{padding:6px 14px 3px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.55;}`,
-  `.${PFX}-sep{height:1px;margin:4px 0;background:rgba(255,255,255,.1);}`,
+  `.${PFX}-item--checked::after{content:'✓';font-family:var(--gjs-main-font,Helvetica,Arial,sans-serif);}`,
+  `.${PFX}-fonts .${PFX}-item[data-font]{font-size:15px;}`,
+    `.${PFX}-sep{height:1px;margin:4px 0;background:rgba(255,255,255,.1);}`,
   `.${PFX}-crumb{position:fixed;z-index:100;display:none;align-items:center;gap:5px;padding:0 8px;height:20px;font-size:12px;line-height:20px;background:#3b97e3;color:#fff;border-radius:3px 3px 0 0;cursor:pointer;user-select:none;white-space:nowrap;font-family:var(--gjs-main-font,Helvetica,Arial,sans-serif);}`,
   `.${PFX}-crumb:hover{background:#2f86d0;}`,
 ].join('\n');

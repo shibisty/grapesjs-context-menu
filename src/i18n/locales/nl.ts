@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Stijlen bekijken',
   delete: 'Verwijderen',
   hierarchyTitle: 'Hiërarchie: kies met welk element je werkt',
+  font: 'Lettertype',
+  fontSelection: 'Geselecteerde tekst',
+  fontElement: 'Hele element',
+  noFonts: 'Geen lettertypen in het project',
+  fontDefault: 'Standaardlettertype',
+  fontMore: 'Meer lettertypen…',
 };
 
 export default messages;

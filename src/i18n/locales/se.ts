@@ -17,6 +17,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Visa stilar',
   delete: 'Ta bort',
   hierarchyTitle: 'Hierarki: välj vilket element du vill arbeta med',
+  font: 'Typsnitt',
+  fontSelection: 'Markerad text',
+  fontElement: 'Hela elementet',
+  noFonts: 'Inga typsnitt i projektet',
+  fontDefault: 'Standardtypsnitt',
+  fontMore: 'Fler typsnitt…',
 };
 
 export default messages;

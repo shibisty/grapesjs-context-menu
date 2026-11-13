@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Lihat gaya',
   delete: 'Hapus',
   hierarchyTitle: 'Hierarki: pilih elemen yang ingin dikerjakan',
+  font: 'Fon',
+  fontSelection: 'Teks terpilih',
+  fontElement: 'Seluruh elemen',
+  noFonts: 'Tidak ada fon di proyek',
+  fontDefault: 'Fon bawaan',
+  fontMore: 'Fon lainnya…',
 };
 
 export default messages;

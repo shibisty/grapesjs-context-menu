@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: '查看样式',
   delete: '删除',
   hierarchyTitle: '层级：选择要操作的元素',
+  font: '字体',
+  fontSelection: '选中的文本',
+  fontElement: '整个元素',
+  noFonts: '项目中没有字体',
+  fontDefault: '默认字体',
+  fontMore: '更多字体…',
 };
 
 export default messages;

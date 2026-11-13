@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Προβολή στυλ',
   delete: 'Διαγραφή',
   hierarchyTitle: 'Ιεραρχία: επιλέξτε με ποιο στοιχείο θα δουλέψετε',
+  font: 'Γραμματοσειρά',
+  fontSelection: 'Επιλεγμένο κείμενο',
+  fontElement: 'Ολόκληρο το στοιχείο',
+  noFonts: 'Δεν υπάρχουν γραμματοσειρές στο έργο',
+  fontDefault: 'Προεπιλεγμένη γραμματοσειρά',
+  fontMore: 'Περισσότερες γραμματοσειρές…',
 };
 
 export default messages;

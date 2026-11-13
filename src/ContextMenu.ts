@@ -4,6 +4,10 @@ import { PFX } from './styles';
 import { placeInViewport } from './utils/dom';
 import { getCapabilities, isEditorAlive, moveAmongSiblings } from './utils/components';
 import { appendBlock, blockId, blockText, getAvailableBlocks, getBlockManager, groupBlocks } from './utils/blocks';
+import { currentFamily, getFontsApi, styleTarget } from './utils/fonts';
+
+/** Items that open a submenu instead of running. */
+const SUBMENU_ITEMS = ['add', 'font'];
 
 export const EVENTS = {
   open: 'context-menu:open',
@@ -61,6 +65,9 @@ export class ContextMenu {
       { id: 'move', icon: '✥', label: t('move'), disabled: !cap.canDrag },
       { id: 'clone', icon: '⧉', label: t('clone'), disabled: !cap.canClone },
     ];
+    if (options.fontsMenu && getFontsApi(editor) && ctx.component.get('stylable') !== false) {
+      items.push({ id: 'font', icon: 'Aa', label: t('font'), separator: true });
+    }
     if (hasStyles) {
       items.push({ id: 'styles', icon: '✎', label: t('viewStyles'), separator: true });
     }
@@ -75,9 +82,9 @@ export class ContextMenu {
     return options.extendMenu ? options.extendMenu(items, ctx) || items : items;
   }
 
-  open(x: number, y: number, component: Component, source: MenuContext['source']): void {
+  open(x: number, y: number, component: Component, source: MenuContext['source'], range: Range | null = null): void {
     this.close();
-    const ctx: MenuContext = { editor: this.editor, component, source };
+    const ctx: MenuContext = { editor: this.editor, component, source, range };
     this.ctx = ctx;
     this.items = this.buildItems(ctx);
 
@@ -147,7 +154,7 @@ export class ContextMenu {
     main.appendChild(document.createTextNode(item.label));
     el.appendChild(main);
 
-    if (item.id === 'add') {
+    if (SUBMENU_ITEMS.includes(item.id) && !item.run) {
       el.setAttribute('aria-haspopup', 'true');
       const arrow = document.createElement('span');
       arrow.textContent = '▸';
@@ -164,6 +171,10 @@ export class ContextMenu {
     const id = el.getAttribute('data-action') || '';
     if (id === 'add') {
       this.openAddSubmenu(el as HTMLElement);
+      return;
+    }
+    if (id === 'font' && !this.items.find((i) => i.id === 'font')?.run) {
+      this.openFontSubmenu(el as HTMLElement);
       return;
     }
     this.runAction(id, e);
@@ -284,6 +295,137 @@ export class ContextMenu {
     this.addBlock(row.getAttribute('data-block-id') || '');
   };
 
+  // ---- "Font" submenu (grapesjs-fonts) ---------------------------------------------
+
+  openFontSubmenu(anchorEl?: HTMLElement): void {
+    this.closeSubmenu();
+    const anchor = anchorEl || this.menuEl?.querySelector<HTMLElement>('[data-action="font"]');
+    const fonts = getFontsApi(this.editor);
+    const ctx = this.ctx;
+    if (!anchor || !ctx || !fonts) return;
+    anchor.classList.add(`${PFX}-item--open`);
+    const { t } = this;
+    const range = ctx.range && fonts.applyToRange ? ctx.range : null;
+    const current = currentFamily(this.editor, ctx.component, range).toLowerCase();
+
+    const sub = document.createElement('div');
+    sub.className = `${PFX}-submenu ${PFX}-fonts`;
+    sub.setAttribute('role', 'menu');
+    const head = document.createElement('div');
+    head.className = `${PFX}-group`;
+    head.textContent = range ? t('fontSelection') : t('fontElement');
+    sub.appendChild(head);
+
+    const row = (attr: string, value: string, text: string): HTMLElement => {
+      const r = document.createElement('div');
+      r.className = `${PFX}-item`;
+      r.setAttribute('role', 'menuitem');
+      r.setAttribute(attr, value);
+      r.tabIndex = -1;
+      r.textContent = text;
+      return r;
+    };
+
+    const list = fonts.list();
+    if (!list.length) {
+      const empty = document.createElement('div');
+      empty.className = `${PFX}-item ${PFX}-item--empty`;
+      empty.textContent = t('noFonts');
+      sub.appendChild(empty);
+    }
+    list.forEach((f) => {
+      const r = row('data-font', f.family, f.family);
+      r.style.fontFamily = fonts.valueOf(f.family);
+      if (f.family.toLowerCase() === current) {
+        r.classList.add(`${PFX}-item--checked`);
+        r.setAttribute('aria-checked', 'true');
+      }
+      sub.appendChild(r);
+    });
+    const extra: HTMLElement[] = [];
+    if (!range && fonts.clear) {
+      const r = row('data-font-action', 'default', t('fontDefault'));
+      if (!current) {
+        r.classList.add(`${PFX}-item--disabled`);
+        r.setAttribute('aria-disabled', 'true');
+      }
+      extra.push(r);
+    }
+    if (fonts.open) extra.push(row('data-font-action', 'more', t('fontMore')));
+    if (extra.length) {
+      const sep = document.createElement('div');
+      sep.className = `${PFX}-sep`;
+      sep.setAttribute('role', 'separator');
+      sub.appendChild(sep);
+      extra.forEach((r) => sub.appendChild(r));
+    }
+
+    sub.addEventListener('click', this.onFontSubmenuClick);
+    document.body.appendChild(sub);
+    this.submenuEl = sub;
+    const r = anchor.getBoundingClientRect();
+    placeInViewport(sub, r.right, r.top);
+  }
+
+  private onFontSubmenuClick = (e: MouseEvent): void => {
+    const row = (e.target as Element).closest(`.${PFX}-item`);
+    if (!row || row.classList.contains(`${PFX}-item--disabled`)) return;
+    const family = row.getAttribute('data-font');
+    const action = row.getAttribute('data-font-action');
+    if (family) this.applyFont(family);
+    else if (action === 'default') this.applyFont(null);
+    else if (action === 'more') this.browseFonts();
+  };
+
+  /**
+   * Applies a project font of grapesjs-fonts to the selected text (when text
+   * was selected in the canvas) or to the element; `null` removes the
+   * element's font-family.
+   */
+  applyFont(family: string | null): boolean {
+    const ctx = this.ctx;
+    if (!ctx) return false;
+    this.close();
+    return this.applyFontTo(ctx, family);
+  }
+
+  private applyFontTo(ctx: MenuContext, family: string | null): boolean {
+    const fonts = getFontsApi(this.editor);
+    if (!fonts) return false;
+    const { editor } = this;
+    const comp = ctx.component;
+    let done = false;
+    if (family && ctx.range && fonts.applyToRange) done = fonts.applyToRange(family, ctx.range);
+    if (!done) {
+      if (editor.getSelected() !== comp) editor.select(comp);
+      const target = styleTarget(editor, comp);
+      done = family ? fonts.apply(family, target) : !!fonts.clear?.(target);
+    }
+    if (done) {
+      editor.trigger(EVENTS.action, {
+        id: 'font',
+        component: comp,
+        family,
+        selection: !!(family && ctx.range),
+        source: ctx.source,
+      });
+    }
+    return done;
+  }
+
+  /** Opens the grapesjs-fonts browser; the chosen font goes to the same text / element. */
+  browseFonts(): void {
+    const ctx = this.ctx;
+    const fonts = getFontsApi(this.editor);
+    if (!ctx || !fonts?.open) return;
+    this.close();
+    fonts.open({
+      onApply: (font) => {
+        this.applyFontTo(ctx, font.family);
+      },
+    });
+  }
+
   /** Appends a block into the menu's component and selects the result. */
   addBlock(id: string): Component | undefined {
     const ctx = this.ctx;
@@ -341,15 +483,20 @@ export class ContextMenu {
       const step = e.key === 'ArrowDown' ? 1 : -1;
       const next = current < 0 ? (step > 0 ? 0 : rows.length - 1) : (current + step + rows.length) % rows.length;
       rows[next].focus();
-    } else if (e.key === 'ArrowRight' && !this.submenuEl && rows[current]?.dataset.action === 'add') {
+    } else if (e.key === 'ArrowRight' && !this.submenuEl && rows[current]?.getAttribute('aria-haspopup')) {
       e.preventDefault();
-      this.openAddSubmenu(rows[current]);
+      const action = rows[current].dataset.action;
+      if (action === 'font') this.openFontSubmenu(rows[current]);
+      else this.openAddSubmenu(rows[current]);
       const sub = this.submenuElement; // getter: TS narrowed `this.submenuEl` to null above
-      sub?.querySelector<HTMLElement>(`.${PFX}-item[data-block-id]`)?.focus();
+      sub
+        ?.querySelector<HTMLElement>(`.${PFX}-item:not(.${PFX}-item--disabled):not(.${PFX}-item--empty)`)
+        ?.focus();
     } else if (e.key === 'ArrowLeft' && this.submenuEl) {
       e.preventDefault();
+      const open = menu.querySelector<HTMLElement>(`.${PFX}-item--open`);
       this.closeSubmenu();
-      menu.querySelector<HTMLElement>('[data-action="add"]')?.focus();
+      (open || menu.querySelector<HTMLElement>('[data-action="add"]'))?.focus();
     } else if ((e.key === 'Enter' || e.key === ' ') && current >= 0) {
       e.preventDefault();
       rows[current].click();

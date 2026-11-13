@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Prikaži stilove',
   delete: 'Obriši',
   hierarchyTitle: 'Hijerarhija: odaberite s kojim elementom radite',
+  font: 'Font teksta',
+  fontSelection: 'Označeni tekst',
+  fontElement: 'Cijeli element',
+  noFonts: 'Nema fontova u projektu',
+  fontDefault: 'Zadani font',
+  fontMore: 'Više fontova…',
 };
 
 export default messages;

@@ -11,6 +11,9 @@
  *   - Move up / Move down (order among siblings)
  *   - Move (drag)        -> the same `tlb-move` command as the toolbar
  *   - Duplicate          -> `tlb-clone`
+ *   - Font               -> submenu with the project fonts of grapesjs-fonts
+ *                           (only when that plugin is installed): applies to
+ *                           the text selected in the canvas, else to the element
  *   - View styles        -> runs `viewStylesCommand`; hidden when that
  *                           command is not registered
  *   - Delete
@@ -32,6 +35,7 @@ import { ContextMenu } from './ContextMenu';
 import { HierarchyBadge } from './HierarchyBadge';
 import { componentFromCanvasEl, findByLayerEl, isAncestorOrSelf, isEditorAlive } from './utils/components';
 import { framePointToPage } from './utils/dom';
+import { selectedTextRange } from './utils/fonts';
 
 export type {
   BuiltinItemId,
@@ -46,7 +50,7 @@ export { EVENTS } from './ContextMenu';
 /** Public API stored on the editor, e.g. to open the menu programmatically. */
 export interface ContextMenuApi {
   /** Opens the menu at viewport coordinates of the host page. */
-  open(x: number, y: number, component: Component, source?: 'canvas' | 'layers'): void;
+  open(x: number, y: number, component: Component, source?: 'canvas' | 'layers', range?: Range | null): void;
   close(): void;
   readonly isOpen: boolean;
   /** Removes every listener and element the plugin created. */
@@ -113,7 +117,9 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
     else editor.select(comp);
     const frameEl = getFrameEl();
     const p = frameEl ? framePointToPage(frameEl, e.clientX, e.clientY) : { x: e.clientX, y: e.clientY };
-    menu.open(p.x, p.y, comp, 'canvas');
+    // Text selected in the element: the "Font" item applies to it.
+    const range = selectedTextRange((e.target as Node).ownerDocument, comp);
+    menu.open(p.x, p.y, comp, 'canvas', range);
   };
 
   // `doc` comes from the `canvas:frame:load` event: at that moment
@@ -200,7 +206,7 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
   editor.on('destroy', destroy);
 
   const api: ContextMenuApi = {
-    open: (x, y, component, source = 'canvas') => menu.open(x, y, component, source),
+    open: (x, y, component, source = 'canvas', range = null) => menu.open(x, y, component, source, range),
     close: () => menu.close(),
     get isOpen() {
       return menu.isOpen;

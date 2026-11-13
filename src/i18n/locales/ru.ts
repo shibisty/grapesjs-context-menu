@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Просмотреть стили',
   delete: 'Удалить',
   hierarchyTitle: 'Иерархия: выберите, с каким элементом работать',
+  font: 'Шрифт',
+  fontSelection: 'Выделенный текст',
+  fontElement: 'Весь элемент',
+  noFonts: 'В проекте нет шрифтов',
+  fontDefault: 'Шрифт по умолчанию',
+  fontMore: 'Другие шрифты…',
 };
 
 export default messages;

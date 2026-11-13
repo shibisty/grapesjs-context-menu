@@ -15,6 +15,7 @@ Menu items:
 | Move up / Move down | Reorders the component among its siblings. |
 | Move (drag) | Starts the same `tlb-move` command as the toolbar's "arrows" button: move the pointer, click to drop. |
 | Duplicate | Runs `tlb-clone`. |
+| Font ▸ | Only with [grapesjs-fonts](https://www.npmjs.com/package/grapesjs-fonts) 0.2+. Submenu with the fonts of the project (each in its own face, the current one checked). Applies to the **text selected** in the canvas (it is wrapped in a `<span>`), otherwise to the **whole element** (what the Style Manager edits for it). *Default font* removes the element's `font-family`, *More fonts…* opens the font browser. Works from the Layer Manager too. |
 | View styles | Runs `viewStylesCommand`. Shown only when that command is registered. |
 | Delete | Removes the component. Disabled for `removable: false`. |
 
@@ -27,7 +28,7 @@ selects it. A right-click *inside* the selected element keeps working with it,
 so "pick an ancestor in the badge → right-click" is how you act on a wrapper
 that is hard to click directly.
 
-Keyboard: `↑`/`↓` move over enabled items, `→` opens "Add element", `←`/`Esc`
+Keyboard: `↑`/`↓` move over enabled items, `→` opens "Add element" / "Font", `←`/`Esc`
 close the submenu, `Enter` activates, `Esc` closes the menu.
 
 ## Installation
@@ -85,6 +86,7 @@ The plugin can also be applied to an editor that is already running:
 | `canvasMenu` | `boolean` | `true` | Right-click menu inside the canvas. |
 | `layersMenu` | `boolean` | `true` | Right-click menu on Layer Manager rows (wherever the Layer Manager is rendered). |
 | `hierarchyBadge` | `boolean` | `true` | The `Name ▾` badge over the selected element. |
+| `fontsMenu` | `boolean` | `true` | The "Font" submenu when grapesjs-fonts is installed (found as `editor.Fonts`, no dependency). |
 | `viewStylesCommand` | `string \| null` | `'layers-sidebar:show-styles'` | Command run by "View styles". The item is hidden while the command isn't registered; `null` hides it for good. |
 | `labels` | `Partial<ContextMenuLabels>` | `{}` | Text overrides, see below. |
 | `injectCss` | `boolean` | `true` | Inject the plugin CSS. Turn off to ship your own styles (classes are prefixed with `gjs-cm-`). |
@@ -143,14 +145,15 @@ editor.onReady(() => {
 
 The `labels` option wins over `I18n` and is the quickest way to override a
 single text. Keys: `add`, `noBlocks`, `selectParent`, `selectChild`, `moveUp`,
-`moveDown`, `move`, `clone`, `viewStyles`, `delete`, `hierarchyTitle`.
+`moveDown`, `move`, `clone`, `viewStyles`, `delete`, `hierarchyTitle`, `font`,
+`fontSelection`, `fontElement`, `noFonts`, `fontDefault`, `fontMore`.
 
 ## Events
 
 | Event | Payload |
 | --- | --- |
 | `context-menu:open` | `{ component, source }` — `source` is `'canvas'` or `'layers'` |
-| `context-menu:action` | `{ id, component, source }`; for "Add element" also `added` (the new component) and `block` (block id) |
+| `context-menu:action` | `{ id, component, source }`; for "Add element" also `added` (the new component) and `block` (block id); for "Font" also `family` (`null` = default) and `selection` (applied to selected text) |
 | `context-menu:close` | `{ component }` |
 
 ```js
@@ -164,6 +167,7 @@ import { getContextMenu } from 'grapesjs-context-menu';
 
 const menu = getContextMenu(editor);
 menu.open(x, y, editor.getSelected()); // viewport coordinates of the host page
+menu.open(x, y, component, 'canvas', range); // with a text Range: "Font" applies to it
 menu.close();
 menu.isOpen;
 menu.destroy(); // remove every listener and element of the plugin

@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Ver estilos',
   delete: 'Eliminar',
   hierarchyTitle: 'Jerarquía: elige con qué elemento trabajar',
+  font: 'Fuente',
+  fontSelection: 'Texto seleccionado',
+  fontElement: 'Elemento completo',
+  noFonts: 'No hay fuentes en el proyecto',
+  fontDefault: 'Fuente predeterminada',
+  fontMore: 'Más fuentes…',
 };
 
 export default messages;

@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'مشاهده استایل‌ها',
   delete: 'حذف',
   hierarchyTitle: 'سلسله‌مراتب: عنصری را که می‌خواهید با آن کار کنید انتخاب کنید',
+  font: 'قلم',
+  fontSelection: 'متن انتخاب‌شده',
+  fontElement: 'کل عنصر',
+  noFonts: 'هیچ قلمی در پروژه نیست',
+  fontDefault: 'قلم پیش‌فرض',
+  fontMore: 'قلم‌های بیشتر…',
 };
 
 export default messages;

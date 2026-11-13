@@ -12,6 +12,12 @@ const messages: ContextMenuLabels = {
   viewStyles: 'Pokaż style',
   delete: 'Usuń',
   hierarchyTitle: 'Hierarchia: wybierz, z którym elementem pracować',
+  font: 'Czcionka',
+  fontSelection: 'Zaznaczony tekst',
+  fontElement: 'Cały element',
+  noFonts: 'Brak czcionek w projekcie',
+  fontDefault: 'Czcionka domyślna',
+  fontMore: 'Więcej czcionek…',
 };
 
 export default messages;
