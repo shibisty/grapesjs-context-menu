@@ -72,6 +72,23 @@ describe('context menu in the canvas', () => {
     expect(menu()!.getAttribute('role')).toBe('menu');
   });
 
+  it('takes items from other plugins (context-menu:items) and shows them before Delete', async () => {
+    await setup();
+    const run = vi.fn();
+    const handler = (p: { items: any[]; ctx: { component: Component } }) => {
+      p.items.push({ id: 'ext', icon: '*', label: 'From a plugin', separator: true, run });
+      p.items.push({ id: 'bad', label: 'No run' }); // ignored: no run()
+    };
+    editor.on('context-menu:items', handler);
+    rightClick(canvasEl('p1'));
+    const ids = [...menu()!.querySelectorAll('[data-action]')].map((el) => el.getAttribute('data-action'));
+    expect(ids.slice(-2)).toEqual(['ext', 'delete']);
+    expect(ids).not.toContain('bad');
+    click(menuItem('ext'));
+    expect(run).toHaveBeenCalledWith(expect.objectContaining({ component: s.get('p1') }));
+    editor.off('context-menu:items', handler);
+  });
+
   it('uses the Russian labels when the editor locale is ru', async () => {
     await setup();
     editor.I18n.setLocale('ru');

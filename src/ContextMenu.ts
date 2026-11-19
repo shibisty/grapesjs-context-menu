@@ -13,6 +13,11 @@ export const EVENTS = {
   open: 'context-menu:open',
   close: 'context-menu:close',
   action: 'context-menu:action',
+  /**
+   * Fired while the menu is built: other plugins push their own items
+   * (with a run function) into payload.items; they are shown before "Delete".
+   */
+  items: 'context-menu:items',
 } as const;
 
 type Translate = (key: keyof ContextMenuLabels) => string;
@@ -71,6 +76,10 @@ export class ContextMenu {
     if (hasStyles) {
       items.push({ id: 'styles', icon: '✎', label: t('viewStyles'), separator: true });
     }
+    // Items of other plugins (e.g. grapesjs-pages' linked components).
+    const extra: MenuItem[] = [];
+    editor.trigger(EVENTS.items, { items: extra, ctx });
+    extra.filter((it) => it && it.id && it.label && typeof it.run === 'function').forEach((it) => items.push(it));
     items.push({
       id: 'delete',
       icon: '🗑',

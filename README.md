@@ -113,6 +113,22 @@ contextMenu(editor, {
 Built-in item ids: `add`, `parent`, `child`, `up`, `down`, `move`, `clone`,
 `styles`, `delete`.
 
+### Items from other plugins
+
+A plugin can add its own items without touching the menu options: listen to
+`context-menu:items` and push items with a `run` function. They are shown
+before *Delete*; `extendMenu` still runs last, so the site keeps the final
+word. grapesjs-pages adds *Edit component* / *Detach from component* on its
+linked components and *Save as component* on everything else this way.
+
+```js
+editor.on('context-menu:items', ({ items, ctx }) => {
+  if (ctx.component.is('image')) {
+    items.push({ id: 'crop', icon: '✂', label: 'Crop', separator: true, run: ({ component }) => crop(component) });
+  }
+});
+```
+
 ### Translations
 
 Labels come from the editor's `I18n` module under the `contextMenu.*` keys.
@@ -155,6 +171,7 @@ single text. Keys: `add`, `noBlocks`, `selectParent`, `selectChild`, `moveUp`,
 | `context-menu:open` | `{ component, source }` — `source` is `'canvas'` or `'layers'` |
 | `context-menu:action` | `{ id, component, source }`; for "Add element" also `added` (the new component) and `block` (block id); for "Font" also `family` (`null` = default) and `selection` (applied to selected text) |
 | `context-menu:close` | `{ component }` |
+| `context-menu:items` | `{ items, ctx }` — fired while the menu is built; push your items (with `run`) into `items` |
 
 ```js
 editor.on('context-menu:action', ({ id, component }) => { /* ... */ });

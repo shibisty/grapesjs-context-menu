@@ -1,6 +1,6 @@
 {
   "name": "grapesjs-context-menu",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "GrapesJS plugin: right-click context menu for the canvas and the Layer Manager (add block inside, select parent/child, reorder, move, clone, delete) plus a clickable hierarchy badge on the selected element.",
   "type": "module",
   "main": "./dist/grapesjs-context-menu.umd.cjs",
