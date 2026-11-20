@@ -1,11 +1,13 @@
 {
   "name": "grapesjs-context-menu",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "GrapesJS plugin: right-click context menu for the canvas and the Layer Manager (add block inside, select parent/child, reorder, move, clone, delete) plus a clickable hierarchy badge on the selected element.",
   "type": "module",
   "main": "./dist/grapesjs-context-menu.umd.cjs",
   "module": "./dist/grapesjs-context-menu.js",
   "types": "./dist/index.d.ts",
+  "unpkg": "./dist/grapesjs-context-menu.umd.js",
+  "jsdelivr": "./dist/grapesjs-context-menu.umd.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,7 +23,7 @@
   "sideEffects": false,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
+    "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly && node -e \"require('fs').copyFileSync('dist/grapesjs-context-menu.umd.cjs','dist/grapesjs-context-menu.umd.js')\"",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",

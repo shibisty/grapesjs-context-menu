@@ -35,7 +35,7 @@ export function resolveOptions(opts?: ContextMenuOptions | null): ResolvedOption
 
 export const PLUGIN_ID = 'grapesjs-context-menu';
 /** Version of this package (a test checks it against package.json). */
-export const VERSION = '1.3.0';
+export const VERSION = '1.3.1';
 
 /** Options for forms (plugin contract): all apply live except the badge and CSS. */
 export const META: PluginMeta = {
