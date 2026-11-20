@@ -28,7 +28,8 @@
  */
 import type { Component, Editor } from 'grapesjs';
 import type { ContextMenuOptions } from './types';
-import { resolveOptions } from './options';
+import { META, VERSION, publicOptions, resolveOptions } from './options';
+import { assignOptions, definePlugin, registerControl } from './contract';
 import { createTranslator, registerMessages } from './i18n';
 import { injectCss } from './styles';
 import { ContextMenu } from './ContextMenu';
@@ -73,6 +74,10 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
   let destroyed = false;
   registerMessages(editor);
   const t = createTranslator(editor, options.labels);
+  const offControl = registerControl(editor, META, () => publicOptions(options), (patch) => {
+    if ('viewStylesCommand' in patch && !patch.viewStylesCommand) patch.viewStylesCommand = null;
+    assignOptions(options as unknown as Record<string, unknown>, patch);
+  });
   if (options.injectCss) injectCss();
 
   const getFrameEl = (): HTMLIFrameElement | null => {
@@ -186,6 +191,7 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
   function destroy(): void {
     if (destroyed) return;
     destroyed = true;
+    offControl();
     menu.destroy();
     badge?.destroy();
     document.removeEventListener('contextmenu', onDocumentContextMenu);
@@ -216,5 +222,7 @@ function contextMenuPlugin(editor: Editor, opts: ContextMenuOptions = {}): void 
   (editor as unknown as Record<string, ContextMenuApi>)[API_KEY] = api;
 }
 
-export { contextMenuPlugin };
+definePlugin(contextMenuPlugin, META);
+
+export { contextMenuPlugin, META, VERSION };
 export default contextMenuPlugin;
